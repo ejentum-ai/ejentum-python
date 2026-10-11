@@ -151,3 +151,72 @@ class Ejentum:
             new_messages.insert(0, {"role": "system", "content": instruction})
 
         return new_messages
+
+    def graph(self, query: str, depth: int = 1) -> Dict[str, Any]:
+        """Retrieve a multi-hop Cognitive Directed Acyclic Graph (DAG) across the 933-edge synergy graph.
+
+        Args:
+            query: The complex task, system failure, or architecture question.
+            depth: Traversal depth (default: 1).
+
+        Returns:
+            Dict containing root, requires, enhances, fallback abilities, edges, and formatted scaffold.
+        """
+        payload = json.dumps({"query": query, "mode": "graph", "depth": depth}).encode("utf-8")
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+            "User-Agent": "Ejentum-Python-SDK/0.1.0",
+        }
+        req = urllib.request.Request(self.base_url, data=payload, headers=headers, method="POST")
+        try:
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except Exception as e:
+            raise APIError(f"Ejentum graph request failed: {e}") from e
+
+    def feedback(
+        self,
+        ability_id: str,
+        outcome: str = "success",
+        score: float = 1.0,
+        query: str = "",
+        comment: str = ""
+    ) -> Dict[str, Any]:
+        """Submit execution telemetry to calibrate adaptive retrieval weights.
+
+        Args:
+            ability_id: The ID of the ability that was executed (e.g., 'CA-025').
+            outcome: 'success' or 'failure'.
+            score: Performance score between 0.0 and 1.0.
+            query: The original query text.
+            comment: Optional qualitative evaluation note.
+
+        Returns:
+            Dict confirming feedback recording and calibrated retrieval weight.
+        """
+        feedback_url = self.base_url.rstrip("/")
+        if feedback_url.endswith("/logicv1"):
+            feedback_url += "/feedback"
+        else:
+            feedback_url += "/logicv1/feedback"
+
+        payload = json.dumps({
+            "ability_id": ability_id,
+            "outcome": outcome,
+            "score": score,
+            "query": query,
+            "comment": comment
+        }).encode("utf-8")
+
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+            "User-Agent": "Ejentum-Python-SDK/0.1.0",
+        }
+        req = urllib.request.Request(feedback_url, data=payload, headers=headers, method="POST")
+        try:
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except Exception as e:
+            raise APIError(f"Ejentum feedback submission failed: {e}") from e
