@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ejentum"
+version = "0.1.0"
+description = "Deterministic Reasoning-Augmented Retrieval (RAR) Cognitive Infrastructure SDK"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+authors = [
+    { name = "Bob Franks", email = "contact@ejentum.com" },
+    { name = "Ejentum Team", email = "contact@ejentum.com" }
+]
+keywords = [
+    "reasoning",
+    "prompt-engineering",
+    "llm",
+    "cognitive-scaffolding",
+    "openai",
+    "anthropic",
+    "langchain",
+    "ai-agents"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = []
+
+[project.optional-dependencies]
+all = ["openai", "anthropic"]
+dev = ["pytest", "pytest-mock"]
+
+[project.urls]
+Homepage = "https://ejentum.com"
+Documentation = "https://ejentum.com/docs"
+Repository = "https://github.com/ejentum-ai"
