@@ -7,12 +7,14 @@ from __future__ import annotations
 import json
 import os
 import urllib.error
+import urllib.parse
 import urllib.request
 from typing import Any, Dict, List, Optional
 
 from .exceptions import APIError, AuthenticationError, ScaffoldNotFoundError
 
 DEFAULT_BASE_URL = "https://api.ejentum.com/logicv1/"
+SDK_VERSION = "1.4.0"
 
 
 class Ejentum:
@@ -46,7 +48,7 @@ class Ejentum:
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
-            "User-Agent": "Ejentum-Python-SDK/0.1.0",
+            "User-Agent": f"Ejentum-Python-SDK/{SDK_VERSION}",
         }
 
         req = urllib.request.Request(self.base_url, data=payload, headers=headers, method="POST")
@@ -76,7 +78,7 @@ class Ejentum:
 
         Args:
             query: The user task, error message, or diagnostic query.
-            mode: Reasoning mode (e.g., 'reasoning', 'causal', 'diagnostic').
+            mode: Reasoning mode (e.g., 'reasoning', 'causal', 'diagnostic', 'graph').
 
         Returns:
             The raw cognitive scaffold text ready for system prompt injection.
@@ -84,6 +86,8 @@ class Ejentum:
         data = self.get_ability(query=query, mode=mode)
 
         if isinstance(data, dict):
+            if "graph_scaffold" in data and isinstance(data["graph_scaffold"], str):
+                return data["graph_scaffold"].strip()
             if "single_ability" in data and isinstance(data["single_ability"], str):
                 return data["single_ability"].strip()
             if "scaffold" in data and isinstance(data["scaffold"], str):
@@ -157,23 +161,107 @@ class Ejentum:
 
         Args:
             query: The complex task, system failure, or architecture question.
-            depth: Traversal depth (default: 1).
+            depth: Traversal depth (1 or 2, default: 1).
+                   - depth=1: Immediate requires, enhances, and fallback nodes.
+                   - depth=2: Recursive multi-hop DAG with 4-stage execution planning:
+                     prerequisite_invariants -> root_operator -> cognitive_amplification -> resiliency_contingency.
 
         Returns:
-            Dict containing root, requires, enhances, fallback abilities, edges, and formatted scaffold.
+            Dict containing root, requires, enhances, fallback abilities, edges, execution_plan (depth=2), and formatted scaffold.
         """
+        depth = max(1, min(int(depth), 2))
         payload = json.dumps({"query": query, "mode": "graph", "depth": depth}).encode("utf-8")
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
-            "User-Agent": "Ejentum-Python-SDK/0.1.0",
+            "User-Agent": f"Ejentum-Python-SDK/{SDK_VERSION}",
         }
         req = urllib.request.Request(self.base_url, data=payload, headers=headers, method="POST")
         try:
             with urllib.request.urlopen(req, timeout=self.timeout) as resp:
                 return json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            raw_body = e.read().decode("utf-8", errors="replace")
+            if e.code == 401:
+                raise AuthenticationError(
+                    f"Ejentum authentication failed (401 Unauthorized): {raw_body}"
+                ) from e
+            raise APIError(
+                f"Ejentum graph request failed with status {e.code}: {raw_body}",
+                status_code=e.code,
+                response_body=raw_body,
+            ) from e
+        except urllib.error.URLError as e:
+            raise APIError(f"Network error connecting to Ejentum API: {e.reason}") from e
         except Exception as e:
             raise APIError(f"Ejentum graph request failed: {e}") from e
+
+    def fts_search(self, query: str, limit: int = 4) -> Dict[str, Any]:
+        """Perform sub-millisecond SQLite FTS5 full-text keyword search across 311 reasoning abilities.
+
+        Executes high-speed BM25 full-text ranking directly against the pre-compiled SQLite FTS5
+        database on the server.
+
+        Args:
+            query: Keyword query or search terms (e.g., 'deadlock circular dependency sequence').
+            limit: Maximum number of abilities to return (default: 4).
+
+        Returns:
+            Dict containing status, query, count, engine ('sqlite_fts5'), and ranked ability results:
+            {
+                "status": "success",
+                "engine": "sqlite_fts5",
+                "query": "...",
+                "count": 3,
+                "results": [
+                    {
+                        "ability_id": "TE-004",
+                        "ability_name": "Deadlock Breaker",
+                        "domain": "Temporal",
+                        "graph_op": "BREAK_DEADLOCK",
+                        "prompt_override": "...",
+                        "rank": -18.966
+                    }, ...
+                ]
+            }
+        """
+        query = (query or "").strip()
+        if not query:
+            raise ValueError("Query cannot be empty for FTS search")
+
+        base = self.base_url.rstrip("/")
+        if base.endswith("/logicv1"):
+            base_endpoint = f"{base}/search/fts"
+        else:
+            base_endpoint = f"{base}/logicv1/search/fts"
+
+        encoded_query = urllib.parse.quote(query)
+        url = f"{base_endpoint}?query={encoded_query}&limit={int(limit)}"
+
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "User-Agent": f"Ejentum-Python-SDK/{SDK_VERSION}",
+        }
+        req = urllib.request.Request(url, headers=headers, method="GET")
+
+        try:
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            raw_body = e.read().decode("utf-8", errors="replace")
+            if e.code == 401:
+                raise AuthenticationError(
+                    f"Ejentum authentication failed (401 Unauthorized): {raw_body}"
+                ) from e
+            raise APIError(
+                f"Ejentum FTS search failed with status {e.code}: {raw_body}",
+                status_code=e.code,
+                response_body=raw_body,
+            ) from e
+        except urllib.error.URLError as e:
+            raise APIError(f"Network error connecting to Ejentum API: {e.reason}") from e
+        except Exception as e:
+            raise APIError(f"Unexpected error communicating with Ejentum: {str(e)}") from e
 
     def feedback(
         self,
@@ -212,11 +300,24 @@ class Ejentum:
         headers = {
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
-            "User-Agent": "Ejentum-Python-SDK/0.1.0",
+            "User-Agent": f"Ejentum-Python-SDK/{SDK_VERSION}",
         }
         req = urllib.request.Request(feedback_url, data=payload, headers=headers, method="POST")
         try:
             with urllib.request.urlopen(req, timeout=self.timeout) as resp:
                 return json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            raw_body = e.read().decode("utf-8", errors="replace")
+            if e.code == 401:
+                raise AuthenticationError(
+                    f"Ejentum authentication failed (401 Unauthorized): {raw_body}"
+                ) from e
+            raise APIError(
+                f"Ejentum feedback submission failed with status {e.code}: {raw_body}",
+                status_code=e.code,
+                response_body=raw_body,
+            ) from e
+        except urllib.error.URLError as e:
+            raise APIError(f"Network error connecting to Ejentum API: {e.reason}") from e
         except Exception as e:
             raise APIError(f"Ejentum feedback submission failed: {e}") from e

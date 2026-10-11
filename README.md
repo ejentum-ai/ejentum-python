@@ -1,6 +1,6 @@
 # Ejentum Python SDK
 
-[![PyPI Version](https://img.shields.io/badge/pypi-0.1.0-blue.svg)](https://pypi.org/project/ejentum/)
+[![PyPI Version](https://img.shields.io/badge/pypi-1.4.0-blue.svg)](https://pypi.org/project/ejentum/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Latency](https://img.shields.io/badge/API%20Latency-%3C80ms-neon)](https://api.ejentum.com)
 
@@ -60,6 +60,35 @@ print(augmented_prompt)
 # ... [Deterministic Causal / Resiliency Scaffold] ...
 # [END SCAFFOLD]
 # Design a failover strategy for our payment processing service.
+```
+
+### 3. Recursive Multi-Hop Cognitive DAG (`depth=2`)
+
+For complex agent workflows, generate a recursive Directed Acyclic Graph (DAG) across the 933-edge synergy graph with an automated 4-stage execution plan:
+
+```python
+# Retrieve 2-hop topological execution plan & compound scaffold
+graph_plan = client.graph("Migrate 50M rows across sharded PostgreSQL database", depth=2)
+
+print("Root Operator:", graph_plan["dag"]["root"])
+print("Execution Stages:", len(graph_plan["dag"]["execution_plan"]))
+for stage in graph_plan["dag"]["execution_plan"]:
+    print(f"  Stage {stage['stage']} ({stage['phase']}): {stage['abilities']}")
+
+# Injects 4-stage cognitive scaffold (prerequisites -> root -> compounding multipliers -> fallbacks)
+scaffold = graph_plan["graph_scaffold"]
+```
+
+### 4. Sub-Millisecond SQLite FTS5 Full-Text Search
+
+Perform lightning-fast full-text keyword searches with BM25 ranking across the 311 ability catalog:
+
+```python
+# Sub-1ms SQLite FTS5 query
+results = client.fts_search("deadlock circular dependency sequence", limit=3)
+
+for match in results["results"]:
+    print(f"[{match['ability_id']}] {match['ability_name']} ({match['domain']}) - Rank: {match['rank']}")
 ```
 
 ---
@@ -137,9 +166,12 @@ result = chain.invoke({"task": "Plan a zero-downtime database migration for 50M 
 ## 🛠️ API Reference
 
 ### `Ejentum(api_key=None, base_url="https://api.ejentum.com/logicv1/", timeout=10.0)`
-* `scaffold(query: str, mode="reasoning") -> str`: Returns the raw cognitive scaffold string.
-* `augment(prompt: str, mode="reasoning") -> str`: Returns the prompt augmented with cognitive scaffolding.
+* `scaffold(query: str, mode="reasoning") -> str`: Returns the raw cognitive scaffold string for system prompt injection.
+* `graph(query: str, depth: int = 1) -> dict`: Returns the Cognitive DAG across the 933-edge synergy graph. Supports `depth=1` and `depth=2` (4-stage recursive execution plan).
+* `fts_search(query: str, limit: int = 4) -> dict`: Executes sub-millisecond SQLite FTS5 full-text keyword search and BM25 ranking.
+* `augment(prompt: str, mode="reasoning") -> str`: Prepends the cognitive scaffold instruction block directly to your prompt string.
 * `augment_messages(messages: list[dict], mode="reasoning") -> list[dict]`: Augments an OpenAI/Anthropic messages list in-place or prepends to the system message.
+* `feedback(ability_id: str, outcome="success", score=1.0, query="", comment="") -> dict`: Submits execution telemetry to calibrate adaptive retrieval weights.
 * `get_ability(query: str, mode="reasoning") -> dict`: Returns the full metadata payload including `ability_id` and matched `domain`.
 
 ---

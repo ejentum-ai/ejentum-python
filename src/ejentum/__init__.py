@@ -6,7 +6,7 @@ from .client import Ejentum
 from .exceptions import APIError, AuthenticationError, EjentumError, ScaffoldNotFoundError
 from .wrappers import wrap_anthropic, wrap_openai
 
-__version__ = "0.1.0"
+__version__ = "1.4.0"
 __all__ = [
     "Ejentum",
     "wrap_openai",

@@ -177,6 +177,141 @@ class TestEjentumSDK(unittest.TestCase):
         self.assertIn("system", passed_kwargs)
         self.assertIn("Scaffold: Test bounds.", passed_kwargs["system"])
 
+    @patch("urllib.request.urlopen")
+    def test_graph_depth_1(self, mock_urlopen):
+        mock_response = MagicMock()
+        mock_response.read.return_value = json.dumps({
+            "status": "success",
+            "mode": "graph",
+            "dag": {
+                "root": "CA-001",
+                "depth": 1,
+                "requires": "TE-004",
+                "enhances": "SI-008",
+                "fallback": "AB-012"
+            },
+            "graph_scaffold": "### EJENTUM REASONING GRAPH ACTIVE ###"
+        }).encode("utf-8")
+        mock_response.__enter__.return_value = mock_response
+        mock_urlopen.return_value = mock_response
+
+        client = Ejentum(api_key=self.api_key)
+        res = client.graph("analyze deadlock", depth=1)
+
+        self.assertEqual(res["status"], "success")
+        self.assertEqual(res["dag"]["depth"], 1)
+        self.assertEqual(res["dag"]["root"], "CA-001")
+        self.assertIn("graph_scaffold", res)
+
+    @patch("urllib.request.urlopen")
+    def test_graph_depth_2_multihop(self, mock_urlopen):
+        mock_response = MagicMock()
+        mock_response.read.return_value = json.dumps({
+            "status": "success",
+            "mode": "graph",
+            "version": "1.4.0",
+            "dag": {
+                "root": "CA-035",
+                "depth": 2,
+                "requires": "TE-006",
+                "enhances": "SI-046",
+                "fallback": "AB-036",
+                "hop2": {
+                    "requires": {"requires": "SP-019", "enhances": "CA-043", "fallback": "SI-017"},
+                    "enhances": {"requires": "CA-039", "enhances": "MC-023", "fallback": "TE-007"},
+                    "fallback": {"requires": "MC-009", "enhances": "SP-003", "fallback": "MC-047"}
+                },
+                "execution_plan": [
+                    {"stage": 1, "phase": "prerequisite_invariants", "abilities": ["SP-019", "TE-006"]},
+                    {"stage": 2, "phase": "root_operator", "abilities": ["CA-035"]},
+                    {"stage": 3, "phase": "cognitive_amplification", "abilities": ["SI-046", "MC-023"]},
+                    {"stage": 4, "phase": "resiliency_contingency", "abilities": ["AB-036", "MC-047"]}
+                ]
+            },
+            "graph_scaffold": "### EJENTUM RECURSIVE MULTI-HOP COGNITIVE GRAPH (DAG v1.4.0, DEPTH=2) ACTIVE ###"
+        }).encode("utf-8")
+        mock_response.__enter__.return_value = mock_response
+        mock_urlopen.return_value = mock_response
+
+        client = Ejentum(api_key=self.api_key)
+        res = client.graph("database migration locking table", depth=2)
+
+        self.assertEqual(res["status"], "success")
+        self.assertEqual(res["dag"]["depth"], 2)
+        self.assertEqual(len(res["dag"]["execution_plan"]), 4)
+        self.assertEqual(res["dag"]["execution_plan"][0]["phase"], "prerequisite_invariants")
+        self.assertEqual(res["dag"]["execution_plan"][3]["phase"], "resiliency_contingency")
+
+        # Verify sent payload contained depth=2
+        sent_req = mock_urlopen.call_args[0][0]
+        sent_payload = json.loads(sent_req.data.decode("utf-8"))
+        self.assertEqual(sent_payload["depth"], 2)
+        self.assertEqual(sent_payload["mode"], "graph")
+
+    @patch("urllib.request.urlopen")
+    def test_fts_search(self, mock_urlopen):
+        mock_response = MagicMock()
+        mock_response.read.return_value = json.dumps({
+            "status": "success",
+            "engine": "sqlite_fts5",
+            "query": "deadlock circular dependency",
+            "count": 2,
+            "results": [
+                {
+                    "ability_id": "TE-004",
+                    "ability_name": "Deadlock Breaker",
+                    "domain": "Temporal",
+                    "graph_op": "BREAK_DEADLOCK",
+                    "rank": -18.966
+                },
+                {
+                    "ability_id": "MC-031",
+                    "ability_name": "Contradiction Adjudicator",
+                    "domain": "Metacognitive",
+                    "graph_op": "ADJUDICATE_DEADLOCK",
+                    "rank": -7.513
+                }
+            ]
+        }).encode("utf-8")
+        mock_response.__enter__.return_value = mock_response
+        mock_urlopen.return_value = mock_response
+
+        client = Ejentum(api_key=self.api_key)
+        res = client.fts_search("deadlock circular dependency", limit=2)
+
+        self.assertEqual(res["status"], "success")
+        self.assertEqual(res["engine"], "sqlite_fts5")
+        self.assertEqual(res["count"], 2)
+        self.assertEqual(res["results"][0]["ability_id"], "TE-004")
+
+        # Verify GET request URL
+        sent_req = mock_urlopen.call_args[0][0]
+        self.assertEqual(sent_req.get_method(), "GET")
+        self.assertIn("/search/fts?query=deadlock", sent_req.full_url)
+        self.assertIn("limit=2", sent_req.full_url)
+
+    def test_fts_search_empty_query_raises(self):
+        client = Ejentum(api_key=self.api_key)
+        with self.assertRaises(ValueError):
+            client.fts_search("")
+
+    @patch("urllib.request.urlopen")
+    def test_feedback_telemetry(self, mock_urlopen):
+        mock_response = MagicMock()
+        mock_response.read.return_value = json.dumps({
+            "status": "success",
+            "recorded": True,
+            "ability_id": "CA-001"
+        }).encode("utf-8")
+        mock_response.__enter__.return_value = mock_response
+        mock_urlopen.return_value = mock_response
+
+        client = Ejentum(api_key=self.api_key)
+        res = client.feedback(ability_id="CA-001", outcome="success", score=0.95)
+
+        self.assertEqual(res["status"], "success")
+        self.assertTrue(res["recorded"])
+
 
 if __name__ == "__main__":
     unittest.main()
