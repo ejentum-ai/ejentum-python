@@ -43,4 +43,4 @@ dev = ["pytest", "pytest-mock"]
 [project.urls]
 Homepage = "https://ejentum.com"
 Documentation = "https://ejentum.com/docs"
-Repository = "https://github.com/ejentum-ai"
+Repository = "https://github.com/ejentum-ai/ejentum-python"
