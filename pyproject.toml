@@ -8,7 +8,7 @@ version = "1.8.0"
 description = "Deterministic Reasoning-Augmented Retrieval (RAR) Cognitive Infrastructure SDK"
 readme = "README.md"
 requires-python = ">=3.8"
-license = "MIT"
+license = { text = "MIT" }
 authors = [
     { name = "Bob Franks", email = "contact@ejentum.com" },
     { name = "Ejentum Team", email = "contact@ejentum.com" }
