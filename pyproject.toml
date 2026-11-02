@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ejentum"
-version = "1.4.0"
+version = "1.8.0"
 description = "Deterministic Reasoning-Augmented Retrieval (RAR) Cognitive Infrastructure SDK"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -21,10 +21,15 @@ keywords = [
     "openai",
     "anthropic",
     "langchain",
-    "ai-agents"
+    "langgraph",
+    "crewai",
+    "ai-agents",
+    "mcp",
+    "guardrails",
+    "anti-hallucination"
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
@@ -33,14 +38,21 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Security",
 ]
 dependencies = []
 
 [project.optional-dependencies]
-all = ["openai", "anthropic"]
-dev = ["pytest", "pytest-mock"]
+all = ["openai", "anthropic", "langchain", "langgraph", "crewai"]
+dev = ["pytest", "pytest-mock", "pytest-asyncio"]
 
 [project.urls]
 Homepage = "https://ejentum.com"
 Documentation = "https://ejentum.com/docs"
-Repository = "https://github.com/ejentum-ai/ejentum-python"
+Quickstart = "https://ejentum.com/docs/quickstart"
+Pricing = "https://ejentum.com/pricing"
+Abilities = "https://ejentum.com/abilities"
+Benchmarks = "https://ejentum.com/benchmarks"
+Guide = "https://ejentum.com/guide"
+"API Status" = "https://api.ejentum.com/"
+Repository = "https://github.com/ejentum-ai/ejentum-core"

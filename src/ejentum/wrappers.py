@@ -11,7 +11,11 @@ from typing import Any, Optional
 from .client import Ejentum
 
 
-def wrap_openai(client: Any, ejentum_client: Optional[Ejentum] = None) -> Any:
+def wrap_openai(
+    client: Any,
+    ejentum_client: Optional[Ejentum] = None,
+    model_family: str = "openai",
+) -> Any:
     """Wrap an official OpenAI client to automatically scaffold chat completions.
 
     Example:
@@ -32,11 +36,12 @@ def wrap_openai(client: Any, ejentum_client: Optional[Ejentum] = None) -> Any:
     @functools.wraps(orig_create)
     def wrapped_create(*args: Any, **kwargs: Any) -> Any:
         mode = kwargs.pop("ejentum_mode", "reasoning")
+        family = kwargs.pop("ejentum_model_family", model_family)
         enabled = kwargs.pop("ejentum_enabled", True)
 
         if enabled and "messages" in kwargs:
             kwargs["messages"] = ejentum_client.augment_messages(
-                messages=kwargs["messages"], mode=mode
+                messages=kwargs["messages"], mode=mode, model_family=family
             )
 
         return orig_create(*args, **kwargs)
@@ -45,7 +50,11 @@ def wrap_openai(client: Any, ejentum_client: Optional[Ejentum] = None) -> Any:
     return client
 
 
-def wrap_anthropic(client: Any, ejentum_client: Optional[Ejentum] = None) -> Any:
+def wrap_anthropic(
+    client: Any,
+    ejentum_client: Optional[Ejentum] = None,
+    model_family: str = "claude",
+) -> Any:
     """Wrap an official Anthropic client to automatically scaffold message creations.
 
     Example:
@@ -67,6 +76,7 @@ def wrap_anthropic(client: Any, ejentum_client: Optional[Ejentum] = None) -> Any
     @functools.wraps(orig_create)
     def wrapped_create(*args: Any, **kwargs: Any) -> Any:
         mode = kwargs.pop("ejentum_mode", "reasoning")
+        family = kwargs.pop("ejentum_model_family", model_family)
         enabled = kwargs.pop("ejentum_enabled", True)
 
         if enabled and "messages" in kwargs:
@@ -82,7 +92,9 @@ def wrap_anthropic(client: Any, ejentum_client: Optional[Ejentum] = None) -> Any
             if not user_query:
                 user_query = "execute instructions"
 
-            scaffold_text = ejentum_client.scaffold(query=user_query, mode=mode)
+            scaffold_text = ejentum_client.scaffold(
+                query=user_query, mode=mode, model_family=family
+            )
             instruction = (
                 "Apply the cognitive scaffold below, then execute the user's task.\n\n"
                 f"[COGNITIVE SCAFFOLD]\n{scaffold_text}\n[END SCAFFOLD]"

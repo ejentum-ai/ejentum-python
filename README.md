@@ -1,26 +1,39 @@
 # Ejentum Python SDK
 
-[![PyPI Version](https://img.shields.io/badge/pypi-1.4.0-blue.svg)](https://pypi.org/project/ejentum/)
+[![PyPI Version](https://img.shields.io/badge/pypi-1.8.0-blue.svg)](https://pypi.org/project/ejentum/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Latency](https://img.shields.io/badge/API%20Latency-%3C80ms-neon)](https://api.ejentum.com)
 
-The official Python SDK for **Ejentum** — Deterministic Reasoning-Augmented Retrieval (RAR) Cognitive Infrastructure.
+The official Python SDK for **Ejentum**: Deterministic Reasoning-Augmented Retrieval (RAR) Cognitive Infrastructure.
 
-Ejentum indexes 300+ deterministic mental models and cognitive scaffolds. In `<80ms`, it retrieves and injects the optimal reasoning scaffold into your LLM prompt, eliminating hallucinated leaps, sycophantic shortcuts, and premature convergence in production AI agents.
+Ejentum indexes 300+ deterministic mental models and cognitive scaffolds. In less than 80ms, it retrieves and injects the optimal reasoning scaffold into your LLM prompt, eliminating hallucinated leaps, sycophantic shortcuts, and premature convergence in production AI agents.
 
 ---
 
-## ⚡ Installation
+## Official Resources
+
+* [Ejentum Platform](https://ejentum.com)
+* [Documentation Hub](https://ejentum.com/docs)
+* [Quickstart Tutorial](https://ejentum.com/docs/quickstart)
+* [API Pricing and Keys](https://ejentum.com/pricing)
+* [Reasoning Abilities Catalog](https://ejentum.com/abilities)
+* [Benchmarking and Evaluations](https://ejentum.com/benchmarks)
+* [Cognitive Architecture Guide](https://ejentum.com/guide)
+* [API Gateway Status](https://api.ejentum.com/)
+
+---
+
+## Installation
 
 ```bash
 pip install ejentum
 ```
 
-*Zero dependencies required. Uses Python standard library only.*
+Zero dependencies required. Uses Python standard library only. Optional framework integrations for OpenAI, Anthropic, LangChain, LangGraph, and CrewAI.
 
 ---
 
-## 🔑 Authentication
+## Authentication
 
 Export your API key in your environment (or pass `api_key="..."` directly to the client):
 
@@ -28,11 +41,11 @@ Export your API key in your environment (or pass `api_key="..."` directly to the
 export EJENTUM_API_KEY="ej_live_your_key_here"
 ```
 
-*Need an API key? Get instant access at [ejentum.com/pricing](https://ejentum.com/pricing).*
+Need an API key? Get instant access at [ejentum.com/pricing](https://ejentum.com/pricing).
 
 ---
 
-## 🚀 Quickstart
+## Quickstart
 
 ### 1. Basic Scaffold Retrieval
 
@@ -62,12 +75,12 @@ print(augmented_prompt)
 # Design a failover strategy for our payment processing service.
 ```
 
-### 3. Recursive Multi-Hop Cognitive DAG (`depth=2`)
+### 3. Recursive Multi-Hop Cognitive DAG (depth=2)
 
 For complex agent workflows, generate a recursive Directed Acyclic Graph (DAG) across the 933-edge synergy graph with an automated 4-stage execution plan:
 
 ```python
-# Retrieve 2-hop topological execution plan & compound scaffold
+# Retrieve 2-hop topological execution plan and compound scaffold
 graph_plan = client.graph("Migrate 50M rows across sharded PostgreSQL database", depth=2)
 
 print("Root Operator:", graph_plan["dag"]["root"])
@@ -93,7 +106,7 @@ for match in results["results"]:
 
 ---
 
-## 🔌 1-Line Drop-in Wrappers
+## Drop-in Wrappers
 
 ### OpenAI Drop-in
 
@@ -136,7 +149,7 @@ response = client.messages.create(
 print(response.content[0].text)
 ```
 
-### LangChain / Agent Loop Integration
+### LangChain and Agent Loop Integration
 
 ```python
 from ejentum import Ejentum
@@ -163,7 +176,52 @@ result = chain.invoke({"task": "Plan a zero-downtime database migration for 50M 
 
 ---
 
-## 🛠️ API Reference
+## Advanced Architecture (v1.8.0)
+
+### Multi-Agent Handshake Engine
+
+Prevent agent communication collapse, circular delegation, and assumption compounding with deterministic runtime contracts:
+
+```python
+from ejentum import HandshakeEngine, AgentRole, get_preset_topology
+
+engine = HandshakeEngine(topology=get_preset_topology("hierarchical_triage"))
+contract = engine.propose(
+    sender_role=AgentRole.COORDINATOR,
+    recipient_role=AgentRole.SPECIALIST,
+    task_scope="Verify database schema migrations against lock contention limits"
+)
+print("Contract Verified:", contract.status)
+```
+
+### Temporal Policy Guard
+
+Enforce strict ordering constraints, required prerequisites, and forbidden actions across multi-step execution traces:
+
+```python
+from ejentum import TemporalGuard, RequirePriorRule, ForbidFollowingRule
+
+guard = TemporalGuard(rules=[
+    RequirePriorRule(action="execute_transaction", required_prior="acquire_idempotency_lock"),
+    ForbidFollowingRule(action="delete_record", forbidden_following="read_record")
+])
+```
+
+### Enterprise Checkpoint Storage
+
+State management with swappable backends:
+
+```python
+from ejentum import create_checkpoint_store
+
+# Supported: memory, file, redis, s3, gcs
+store = create_checkpoint_store("memory")
+store.save_checkpoint("session_123", {"step": 4, "state": "verified"})
+```
+
+---
+
+## API Reference
 
 ### `Ejentum(api_key=None, base_url="https://api.ejentum.com/logicv1/", timeout=10.0)`
 * `scaffold(query: str, mode="reasoning") -> str`: Returns the raw cognitive scaffold string for system prompt injection.
@@ -176,5 +234,6 @@ result = chain.invoke({"task": "Plan a zero-downtime database migration for 50M 
 
 ---
 
-## 📄 License
-MIT © [Ejentum.com](https://ejentum.com)
+## License
+
+MIT (c) [Ejentum.com](https://ejentum.com)
