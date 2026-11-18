@@ -1,12 +1,22 @@
 # Ejentum Python SDK
 
-[![PyPI Version](https://img.shields.io/badge/pypi-1.8.0-blue.svg)](https://pypi.org/project/ejentum/)
+[![PyPI Version](https://img.shields.io/badge/pypi-1.9.0-blue.svg)](https://pypi.org/project/ejentum/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![Hugging Face Dataset](https://img.shields.io/badge/Hugging%20Face-320--Trap%20Benchmark-FFD21E)](https://huggingface.co/datasets/ejentum/adversarial-systems-engineering-traps)
+[![StackShare](https://img.shields.io/badge/StackShare-%2341%20Agent%20Platforms-06AC38)](https://stackshare.io/ejentum)
 [![Latency](https://img.shields.io/badge/API%20Latency-%3C80ms-neon)](https://api.ejentum.com)
 
-The official Python SDK for **Ejentum**: Deterministic Reasoning-Augmented Retrieval (RAR) Cognitive Infrastructure.
+The official Python SDK for **Ejentum**: Deterministic Reasoning-Augmented Retrieval (RAR) and Pre-Execution Tool Governance for Autonomous AI Agents.
 
-Ejentum indexes 300+ deterministic mental models and cognitive scaffolds. In less than 80ms, it retrieves and injects the optimal reasoning scaffold into your LLM prompt, eliminating hallucinated leaps, sycophantic shortcuts, and premature convergence in production AI agents.
+Ejentum indexes 311 deterministic mental models and cognitive scaffolds linked by 933 graph edges. In less than 2ms, it evaluates pre-execution invariants and injects the optimal reasoning scaffold into your LLM prompt, eliminating hallucinated tool parameters, sycophantic shortcuts, and premature convergence in production AI agents.
+
+---
+
+## Architectural Comparisons
+
+* [vs NVIDIA NeMo Guardrails](https://ejentum.com/vs/nemo-guardrails): Sub-2ms pre-execution tool boundaries vs Colang secondary LLM rail latency.
+* [vs Guardrails AI](https://ejentum.com/vs/guardrails-ai): Upfront cognitive priming vs expensive post-hoc Pydantic re-ask loops.
+* [Hugging Face 320-Trap Benchmark](https://huggingface.co/datasets/ejentum/adversarial-systems-engineering-traps): Audited Promptfoo dataset and replication suite.
 
 ---
 
@@ -19,6 +29,7 @@ Ejentum indexes 300+ deterministic mental models and cognitive scaffolds. In les
 * [Reasoning Abilities Catalog](https://ejentum.com/abilities)
 * [Benchmarking and Evaluations](https://ejentum.com/benchmarks)
 * [Cognitive Architecture Guide](https://ejentum.com/guide)
+* [Hugging Face Benchmark Dataset](https://huggingface.co/datasets/ejentum/adversarial-systems-engineering-traps)
 * [API Gateway Status](https://api.ejentum.com/)
 
 ---

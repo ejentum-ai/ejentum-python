@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ejentum"
-version = "1.8.0"
-description = "Deterministic Reasoning-Augmented Retrieval (RAR) Cognitive Infrastructure SDK"
+version = "1.9.0"
+description = "Deterministic Reasoning-Augmented Retrieval (RAR) and Pre-Execution Tool Governance SDK"
 readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "MIT" }
@@ -26,6 +26,8 @@ keywords = [
     "ai-agents",
     "mcp",
     "guardrails",
+    "tool-governance",
+    "pre-execution-boundary",
     "anti-hallucination"
 ]
 classifiers = [
