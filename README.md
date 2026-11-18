@@ -52,7 +52,7 @@ Export your API key in your environment (or pass `api_key="..."` directly to the
 export EJENTUM_API_KEY="ej_live_your_key_here"
 ```
 
-Need an API key? Get instant access at [ejentum.com/pricing](https://ejentum.com/pricing).
+> **Quick Testing**: You can mint an instant 1-click test key (no email or signup required) at [ejentum.com/pricing](https://ejentum.com/pricing) or programmatically via `curl -X POST https://api.ejentum.com/api/trial/request -H "Content-Type: application/json" -d "{}"`.
 
 ---
 
